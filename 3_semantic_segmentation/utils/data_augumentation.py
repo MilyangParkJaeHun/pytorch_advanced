@@ -1,7 +1,3 @@
-# 第3章セマンティックセグメンテーションのデータオーギュメンテーション
-# 注意　アノテーション画像はカラーパレット形式（インデックスカラー画像）となっている。
-
-# パッケージのimport
 import torch
 from torchvision import transforms
 from PIL import Image, ImageOps, ImageFilter
@@ -9,9 +5,6 @@ import numpy as np
 
 
 class Compose(object):
-    """引数transformに格納された変形を順番に実行するクラス
-       対象画像とアノテーション画像を同時に変換させます。 
-    """
 
     def __init__(self, transforms):
         self.transforms = transforms
@@ -28,24 +21,19 @@ class Scale(object):
 
     def __call__(self, img, anno_class_img):
 
-        width = img.size[0]  # img.size=[幅][高さ]
-        height = img.size[1]  # img.size=[幅][高さ]
+        width = img.size[0] 
+        height = img.size[1]  
 
-        # 拡大倍率をランダムに設定
         scale = np.random.uniform(self.scale[0], self.scale[1])
 
-        scaled_w = int(width * scale)  # img.size=[幅][高さ]
-        scaled_h = int(height * scale)  # img.size=[幅][高さ]
+        scaled_w = int(width * scale)  
+        scaled_h = int(height * scale)  
 
-        # 画像のリサイズ
         img = img.resize((scaled_w, scaled_h), Image.BICUBIC)
 
-        # アノテーションのリサイズ
         anno_class_img = anno_class_img.resize(
             (scaled_w, scaled_h), Image.NEAREST)
 
-        # 画像を元の大きさに
-        # 切り出し位置を求める
         if scale > 1.0:
             left = scaled_w - width
             left = int(np.random.uniform(0, left))
@@ -58,7 +46,6 @@ class Scale(object):
                 (left, top, left+width, top+height))
 
         else:
-            # input_sizeよりも短い辺はpaddingする
             p_palette = anno_class_img.copy().getpalette()
 
             img_original = img.copy()
@@ -88,10 +75,8 @@ class RandomRotation(object):
 
     def __call__(self, img, anno_class_img):
 
-        # 回転角度を決める
         rotate_angle = (np.random.uniform(self.angle[0], self.angle[1]))
 
-        # 回転
         img = img.rotate(rotate_angle, Image.BILINEAR)
         anno_class_img = anno_class_img.rotate(rotate_angle, Image.NEAREST)
 
@@ -99,7 +84,6 @@ class RandomRotation(object):
 
 
 class RandomMirror(object):
-    """50%の確率で左右反転させるクラス"""
 
     def __call__(self, img, anno_class_img):
         if np.random.randint(2):
@@ -109,15 +93,11 @@ class RandomMirror(object):
 
 
 class Resize(object):
-    """引数input_sizeに大きさを変形するクラス"""
 
     def __init__(self, input_size):
         self.input_size = input_size
 
     def __call__(self, img, anno_class_img):
-
-        # width = img.size[0]  # img.size=[幅][高さ]
-        # height = img.size[1]  # img.size=[幅][高さ]
 
         img = img.resize((self.input_size, self.input_size),
                          Image.BICUBIC)
@@ -134,21 +114,16 @@ class Normalize_Tensor(object):
 
     def __call__(self, img, anno_class_img):
 
-        # PIL画像をTensorに。大きさは最大1に規格化される
         img = transforms.functional.to_tensor(img)
 
-        # 色情報の標準化
         img = transforms.functional.normalize(
             img, self.color_mean, self.color_std)
 
-        # アノテーション画像をNumpyに変換
-        anno_class_img = np.array(anno_class_img)  # [高さ][幅]
+        anno_class_img = np.array(anno_class_img)  
 
-        # 'ambigious'には255が格納されているので、0の背景にしておく
         index = np.where(anno_class_img == 255)
         anno_class_img[index] = 0
 
-        # アノテーション画像をTensorに
         anno_class_img = torch.from_numpy(anno_class_img)
 
         return img, anno_class_img
