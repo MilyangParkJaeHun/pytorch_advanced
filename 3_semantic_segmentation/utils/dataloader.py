@@ -6,6 +6,10 @@ from utils.data_augumentation import Compose, Scale, RandomRotation, RandomMirro
 
 
 def make_datapath_list(rootpath):
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6013a9ed44ece10e172c649eb00ae0b3afead4df
     imgpath_template = osp.join(rootpath, 'JPEGImages', '%s.jpg')
     annopath_template = osp.join(rootpath, 'SegmentationClass', '%s.png')
 
@@ -16,8 +20,13 @@ def make_datapath_list(rootpath):
     train_anno_list = list()
 
     for line in open(train_id_names):
+<<<<<<< HEAD
         file_id = line.strip()  
         img_path = (imgpath_template % file_id)  
+=======
+        file_id = line.strip() 
+        img_path = (imgpath_template % file_id) 
+>>>>>>> 6013a9ed44ece10e172c649eb00ae0b3afead4df
         anno_path = (annopath_template % file_id)  
         train_img_list.append(img_path)
         train_anno_list.append(anno_path)
@@ -26,9 +35,15 @@ def make_datapath_list(rootpath):
     val_anno_list = list()
 
     for line in open(val_id_names):
+<<<<<<< HEAD
         file_id = line.strip()  
         img_path = (imgpath_template % file_id)  
         anno_path = (annopath_template % file_id) 
+=======
+        file_id = line.strip() 
+        img_path = (imgpath_template % file_id)  
+        anno_path = (annopath_template % file_id)  
+>>>>>>> 6013a9ed44ece10e172c649eb00ae0b3afead4df
         val_img_list.append(img_path)
         val_anno_list.append(anno_path)
 
@@ -53,6 +68,10 @@ class DataTransform():
         }
 
     def __call__(self, phase, img, anno_class_img):
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6013a9ed44ece10e172c649eb00ae0b3afead4df
         return self.data_transform[phase](img, anno_class_img)
 
 
